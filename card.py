@@ -13,7 +13,7 @@ class Card:
     def value(self):
         if self.rank == "A":
             value = 11
-        elif self.rank == 'J' or self.rank == 'Q' or self.rank == 'K':
+        elif self.rank in ['J', 'Q', 'K']:
             value = 10
         else:
             value = int(self.rank)
