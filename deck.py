@@ -14,8 +14,3 @@ class Deck:
         suits = ['spades', 'clubs', 'hearts', 'diamonds']
         black_jack_deck = itertools.product(ranks, suits)
         [self.cards.append(Card(rank, suit)) for rank, suit in black_jack_deck]
-
-
-deck = Deck()
-deck.add_cards()
-print(deck.cards[-1].value)

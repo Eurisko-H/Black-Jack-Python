@@ -1,19 +1,21 @@
 from deck import Deck
+import pytest
 
 
-def test_add_card_length():
+@pytest.fixture()
+def deck_instance():
     deck = Deck()
     deck.add_cards()
-    assert len(deck.cards) == 52
+    return deck.cards
 
 
-def test_add_card_value():
-    deck = Deck()
-    deck.add_cards()
-    assert deck.cards[-1].value == 11
+def test_add_card_length(deck_instance):
+    assert len(deck_instance) == 52
 
 
-def test_add_card_type():
-    deck = Deck()
-    deck.add_cards()
-    assert deck.cards[-1].rank == "A"
+def test_add_card_value(deck_instance):
+    assert deck_instance[-1].value == 11
+
+
+def test_add_card_type(deck_instance):
+    assert deck_instance[-1].rank == "A"
