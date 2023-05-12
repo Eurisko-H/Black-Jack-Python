@@ -7,9 +7,8 @@ from player import Player
 @pytest.fixture
 def player_instance():
     player = Player('hasan')
-    deck = Deck()
-    deck.add_cards()
-    one_card = deck.cards.pop()
+    black_jack_deck = Deck.add_cards()
+    one_card = black_jack_deck.pop()
     player.add_card(one_card)
     return player
 

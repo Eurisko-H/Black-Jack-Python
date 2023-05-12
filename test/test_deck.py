@@ -4,9 +4,7 @@ import pytest
 
 @pytest.fixture()
 def deck_instance():
-    deck = Deck()
-    deck.add_cards()
-    return deck.cards
+    return Deck.add_cards()
 
 
 def test_add_card_length(deck_instance):

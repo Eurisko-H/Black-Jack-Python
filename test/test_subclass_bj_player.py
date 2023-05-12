@@ -25,5 +25,6 @@ def test_remove_funds(player_instance):
 
 
 def test_remove_funds_raise_error(player_instance):
-    with pytest.raises(ValueError, match='the removeFunds method must be passed a number greater than or equal to zero'):
+    with pytest.raises(ValueError,
+                       match='the removeFunds method must be passed a number greater than or equal to zero'):
         player_instance.remove_funds(-10)

@@ -1,9 +1,7 @@
+import random
+
 from card import Card
 from deck import Deck
-
-deck = Deck()
-deck.add_cards()
-one_card = deck.cards.pop()
 
 
 class Player:
@@ -12,7 +10,7 @@ class Player:
         self.hand = []
         self.hand_value = 0
 
-    def add_to_hand_value(self, value):
+    def add_to_hand_value(self, value: int):
         self.hand_value = value
 
     def reset(self):
@@ -32,13 +30,13 @@ class BlackJackPlayer(Player):
         super().__init__(name)
         self.funds = funds
 
-    def add_funds(self, amount):
+    def add_funds(self, amount: int):
         if amount >= 0:
             self.funds += amount
         else:
             raise ValueError('the addFunds method must be passed a number greater than or equal to zero')
 
-    def remove_funds(self, amount):
+    def remove_funds(self, amount: int):
         if amount >= 0:
             self.funds -= amount
         else:
@@ -50,9 +48,44 @@ class BlackJackPlayer(Player):
     \r└────────────────────────────────{'─' * 15}┘""")
 
 
-player = BlackJackPlayer('hasan', 1000)
+class BlackJackDealer(Player, Deck):
+    def __init__(self, name):
+        super().__init__(name)
+        self.black_jack_deck = Deck.add_cards()
 
+    def reset_deck(self):
+        self.black_jack_deck = Deck.add_cards()
+
+    def shuffle_cards(self):
+        random.shuffle(self.black_jack_deck)
+
+    def show_hand_cover(self):
+        [print(*i) for i in zip(*Card.hide(self.hand))]
+
+    def show_over_view(self, show_value):
+        if show_value:
+            print(f"""┌────────────────────────────────{'─' * 4}┐
+                \r│  Name: {self.name}  Hand-Total: {self.hand_value}       │
+                \r└────────────────────────────────{'─' * 4}┘""")
+        else:
+            print(f"""┌────────────────────────────────{'─' * 4}┐
+                \r│  Name: {self.name}  Hand-Total: {"?"}        │
+                \r└────────────────────────────────{'─' * 4}┘""")
+
+
+player = BlackJackDealer('hasan')
+player.shuffle_cards()
+print(player.black_jack_deck)
+
+player.add_card(player.black_jack_deck.pop())
+player.add_card(player.black_jack_deck.pop())
+player.add_card(player.black_jack_deck.pop())
+
+print(len(player.black_jack_deck))
 print(player.hand_value)
-print(player.funds)
+player.show_hand()
+player.show_hand_cover()
 
-player.show_over_view()
+player.show_over_view(True)
+
+print(help(player))
