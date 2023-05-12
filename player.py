@@ -7,24 +7,13 @@ one_card = deck.cards.pop()
 
 
 class Player:
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
         self.hand = []
-        self._hand_value = 0
+        self.hand_value = 0
 
-    def name(self):
-        return self.name
-
-    def hand(self):
-        return self.hand
-
-    @property
-    def hand_value(self):
-        return self._hand_value
-
-    @hand_value.setter
-    def hand_value(self, value):
-        self._hand_value = value
+    def add_to_hand_value(self, value):
+        self.hand_value = value
 
     def reset(self):
         self.hand = []
@@ -38,6 +27,32 @@ class Player:
         [print(*i) for i in zip(*Card.show(self.hand))]
 
 
-player = Player('hasan')
-player.add_card(one_card)
-player.show_hand()
+class BlackJackPlayer(Player):
+    def __init__(self, name, funds):
+        super().__init__(name)
+        self.funds = funds
+
+    def add_funds(self, amount):
+        if amount >= 0:
+            self.funds += amount
+        else:
+            raise ValueError('the addFunds method must be passed a number greater than or equal to zero')
+
+    def remove_funds(self, amount):
+        if amount >= 0:
+            self.funds -= amount
+        else:
+            raise ValueError('the removeFunds method must be passed a number greater than or equal to zero')
+
+    def show_over_view(self):
+        print(f"""┌────────────────────────────────{'─' * 15}┐
+    \r│  Name: {self.name}  Hand-Total: {self.hand_value}  Balance: {self.funds}    │
+    \r└────────────────────────────────{'─' * 15}┘""")
+
+
+player = BlackJackPlayer('hasan', 1000)
+
+print(player.hand_value)
+print(player.funds)
+
+player.show_over_view()

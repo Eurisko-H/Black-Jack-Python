@@ -6,12 +6,6 @@ class Card:
     def __repr__(self):
         return f"{self.rank}-{self.suit}"
 
-    def rank(self):
-        return self.rank
-
-    def suit(self):
-        return self.suit
-
     @property
     def value(self):
         if self.rank == "A":
