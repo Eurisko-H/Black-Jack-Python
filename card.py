@@ -17,7 +17,7 @@ class Card:
         return value
 
     @staticmethod
-    def hide(hand: list = None) -> [str]:
+    def hide(hand: list = None) -> [[str]]:
         if hand is None:
             hand = []
         ascii_cards = []
@@ -53,7 +53,7 @@ class Card:
         return ascii_cards
 
     @staticmethod
-    def show(hand=None):
+    def show(hand=None) -> [[str]]:
         if hand is None:
             hand = []
         ascii_cards = []

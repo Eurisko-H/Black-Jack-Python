@@ -12,3 +12,7 @@ def test_reset_deck(player_instance):
     player_instance.reset_deck()
     assert len(player_instance.black_jack_deck) == 52
 
+
+def test_deal(player_instance):
+    assert player_instance.deal().rank == "A"
+
