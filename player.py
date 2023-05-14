@@ -1,4 +1,5 @@
 import random
+import cli_box
 
 from card import Card
 from deck import Deck
@@ -50,12 +51,10 @@ class BlackJackPlayer(Player):
             raise ValueError('the removeFunds method must be passed a number greater than or equal to zero')
 
     def show_over_view(self):
-        print(f"""┌────────────────────────────────{'─' * 20}┐
-                \r│  Name: {self.name}  Hand-Total: {self.hand_value}  Balance: {self.funds}         │
-                \r└────────────────────────────────{'─' * 20}┘""")
+        print(cli_box.rounded(f"""Name: {self.name}  Hand-Total: {self.hand_value}  Balance: {self.funds}"""))
 
 
-class BlackJackDealer(Player, Deck):
+class BlackJackDealer(Player):
     def __init__(self, name):
         super().__init__(name)
         self.black_jack_deck = Deck.add_cards()
@@ -74,10 +73,6 @@ class BlackJackDealer(Player, Deck):
 
     def show_over_view(self, show_value):
         if show_value:
-            print(f"""┌────────────────────────────────{'─' * 4}┐
-                \r│  Name: {self.name}  Hand-Total: {self.hand_value}      │
-                \r└────────────────────────────────{'─' * 4}┘""")
+            print(cli_box.rounded(f"""Name: {self.name}  Hand-Total: {self.hand_value}"""))
         else:
-            print(f"""┌────────────────────────────────{'─' * 4}┐
-                \r│  Name: {self.name}  Hand-Total: {"?"}       │
-                \r└────────────────────────────────{'─' * 4}┘""")
+            print(cli_box.rounded(f"""Name: {self.name}  Hand-Total: {"?"}"""))
