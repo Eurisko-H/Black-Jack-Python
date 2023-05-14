@@ -73,6 +73,6 @@ class BlackJackDealer(Player):
 
     def show_over_view(self, show_value):
         if show_value:
-            print(cli_box.rounded(f"""Name: {self.name}  Hand-Total: {self.hand_value}"""))
+            print(cli_box.rounded(f"Name: {self.name}  Hand-Total: {self.hand_value}"))
         else:
-            print(cli_box.rounded(f"""Name: {self.name}  Hand-Total: {"?"}"""))
+            print(cli_box.rounded(f"Name: {self.name}  Hand-Total: {'?'}"))

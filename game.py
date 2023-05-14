@@ -1,12 +1,14 @@
-from player import BlackJackPlayer, BlackJackDealer
-from colorama import Fore, Back, init
-import time
 import os
+import time
+import sys
+import cli_box
+from player import BlackJackPlayer, BlackJackDealer
+from colorama import Fore, Back, init, Style
 from rich.console import Console
 from rich.theme import Theme
 
 
-init(autoreset=True)
+init()
 
 custom_theme = Theme({'success': 'green', 'error': 'bold red',
                       'others': 'blue underline', 'tie': 'magenta', 'lose_bust': 'purple', 'win': 'orange3'})
@@ -14,13 +16,29 @@ custom_theme = Theme({'success': 'green', 'error': 'bold red',
 console = Console(theme=custom_theme)
 
 
+def tprint(words):
+    for char in words:
+        time.sleep(0.005)
+        sys.stdout.write(char)
+        sys.stdout.flush()
+
+
+intro_ascii = f"""{Fore.RED}
+
+    )  (                )                      )  
+ ( /(  )\    )       ( /(    (      )       ( /(  
+ )\())((_)( /(   (   )\())   )\  ( /(   (   )\()) 
+((_)\  _  )(_))  )\ ((_)\   ((_) )(_))  )\ ((_)\ 
+{Fore.BLUE}| |(_)| |((_)_  ((_)| |(_){Fore.MAGENTA}   | |((_)_  ((_)| |(_) 
+{Fore.BLUE}| '_ \| |/ _` |/ _| | / / {Fore.MAGENTA}   | |/ _` |/ _| | / /  
+{Fore.BLUE}|_.__/|_|\__,_|\__| |_\_\ {Fore.MAGENTA}  _/ |\__,_|\__| |_\_\  
+                           |__/                   
+{Style.RESET_ALL}"""
+
+
 def intro():
     clear_screen()
-    print(
-        """┌────────────────────────────────────────┐
-         \r│        Black Jack Terminal Game        │
-         \r└────────────────────────────────────────┘"""
-    )
+    tprint(intro_ascii)
 
 
 def clear_screen():
@@ -37,12 +55,12 @@ def black_jack(dealer, pet_amount, player):
 
 
 def low_on_cards():
-    if len(steve.black_jack_deck) <= 20:
+    if len(steve.black_jack_deck) <= 15:
         steve.reset_deck()
         steve.shuffle_cards()
         for i in range(4):
-            print(f"\r{Fore.LIGHTYELLOW_EX}The dealer is shuffling the cards....{i}", end='')
-            time.sleep(1.5)
+            tprint(f"\r{Fore.LIGHTYELLOW_EX}The dealer is shuffling the cards....{i}{Fore.RESET}")
+            time.sleep(1)
         print("\n")
         return True
 
@@ -51,12 +69,17 @@ def take_bet(player):
     clear_screen()
     while True:
         try:
+            console.print(cli_box.rounded(f"Money: {player.funds}$"))
+            if player.funds == 0:
+                console.print(f"You lost all of your money", style='error')
+                sys.exit()
             bet = int(input(f"{Back.CYAN}How many chips worth in $$ would you like to bet?{Back.RESET} "))
         except ValueError:
             console.print("Sorry! Please can you type in a number", style="error")
         else:
             if bet > player.funds:
-                print(f"Your bet can't exceed {player.funds}")
+                console.print(f"Your bet can't exceed {player.funds}", style='error')
+
             elif bet < 1:
                 console.print("Your bet can't by less than 1$", style="error")
             else:
