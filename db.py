@@ -4,12 +4,21 @@ import sqlite3
 
 class DBSetup:
     def __init__(self):
-        self.db_path = os.path.join(os.path.dirname(__file__), 'db/game.db')
-        self.conn = sqlite3.connect(self.db_path)
-        self.cursor = self.conn.cursor()
-        print("Connected to SQLite")
+        try:
+            if not os.path.exists('db'):
+                os.mkdir('db')
+            self.db_path = os.path.join(os.path.dirname(__file__), 'db', 'game.db')
+            self.conn = sqlite3.connect(self.db_path)
+            self.cursor = self.conn.cursor()
+            print("Connected to SQLite")
+        except OSError as error:
+            print("Error while creating the file", error)
+        except sqlite3.Error as error:
+            print("Error while working with SQLite", error)
 
-    def setup_db(self, name, money):
+    def setup_db(self, player):
+        money = player.funds - 1000
+        name = player.name
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS game (
                                        name TEXT UNIQUE,
                                        win_money INTEGER NOT NULL DEFAULT 0,
@@ -25,23 +34,10 @@ class DBSetup:
         self.conn.commit()
         print('values added successfully')
 
-    def get_win_money(self, name):
-        query = self.conn.execute('SELECT win_money FROM game WHERE name=:name', {'name': name})
-        return query.fetchall()[0][0]
+    def get_money(self, name):
+        query = self.conn.execute('SELECT * FROM game WHERE name=:name', {'name': name})
+        return query.fetchall()[0]
 
-    def get_lost_money(self, name):
-        query = self.conn.execute('SELECT lost_money FROM game WHERE name=:name', {'name': name})
-        return query.fetchall()[0][0]
-
-
-try:
-    start = DBSetup()
-    start.setup_db('tom', -50)
-    print(start.get_win_money('tom'))
-    print(start.get_lost_money('tom'))
-except sqlite3.Error as error:
-    print("Error while working with SQLite", error)
-finally:
-    if start.conn:
-        start.conn.close()
-        print("sqlite connection is closed")
+    def get_all_user(self):
+        query = self.conn.execute('SELECT * FROM game')
+        return query.fetchall()
