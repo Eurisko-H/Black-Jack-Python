@@ -7,7 +7,6 @@ from colorama import Fore, Back, init, Style
 from rich.console import Console
 from rich.theme import Theme
 
-
 init()
 
 custom_theme = Theme({'success': 'green', 'error': 'bold red',
@@ -51,13 +50,13 @@ def black_jack(dealer, pet_amount, player):
     dealer.show_hand()
     pet_amount = int(pet_amount * 2.5)
     player_win(player, pet_amount)
-    reset_both(player, steve)
+    reset_both(player, dealer)
 
 
-def low_on_cards():
-    if len(steve.black_jack_deck) <= 15:
-        steve.reset_deck()
-        steve.shuffle_cards()
+def low_on_cards(dealer):
+    if len(dealer.black_jack_deck) <= 15:
+        dealer.reset_deck()
+        dealer.shuffle_cards()
         for i in range(4):
             tprint(f"\r{Fore.LIGHTYELLOW_EX}The dealer is shuffling the cards....{i}{Fore.RESET}")
             time.sleep(1)
@@ -132,57 +131,70 @@ def reset_both(player, dealer):
     dealer.reset()
 
 
-def show_some():
-    human.show_over_view()
-    human.show_hand()
-    steve.show_over_view(False)
-    steve.show_hand_cover()
+def show_some(player, dealer):
+    player.show_over_view()
+    player.show_hand()
+    dealer.show_over_view(False)
+    dealer.show_hand_cover()
 
 
-intro()
-human = BlackJackPlayer('hasan', 1000)
-steve = BlackJackDealer('dealer')
-steve.shuffle_cards()
-
-while True:
-    if not low_on_cards():
-        time.sleep(3)
-    pet = take_bet(human)
-
-    for _ in range(2):
-        hit(human, steve)
-        hit(steve, steve)
-
-    show_some()
-
-    if human.hand_value == 21:
-        black_jack(steve, pet, human)
-        continue
+def main():
+    intro()
+    user_name = input("What's your name: ")
+    human = BlackJackPlayer(user_name, 1000)
+    steve = BlackJackDealer('dealer')
+    steve.shuffle_cards()
 
     while True:
-        if human.hand_value > 21:
-            player_bust_lost("player bust")
-            break
-        if hit_or_stand(human, steve): break
-        show_some()
+        if not low_on_cards(steve):
+            time.sleep(3)
+        pet = take_bet(human)
 
-    if human.hand_value <= 21:
-        while steve.hand_value < 17:
+        for _ in range(2):
+            hit(human, steve)
             hit(steve, steve)
 
-        steve.show_over_view(True)
-        steve.show_hand()
+        show_some(human, steve)
 
-        if steve.hand_value > 21:
-            player_win(human, pet*2)
+        if human.hand_value == 21:
+            black_jack(steve, pet, human)
+            continue
 
-        elif steve.hand_value > human.hand_value:
-            player_bust_lost("player lost")
+        while True:
+            if human.hand_value > 21:
+                player_bust_lost("player bust")
+                break
+            if hit_or_stand(human, steve): break
+            show_some(human, steve)
 
-        elif steve.hand_value < human.hand_value:
-            player_win(human, pet*2)
+        if human.hand_value <= 21:
+            while steve.hand_value < 17:
+                hit(steve, steve)
 
-        else:
-            push(human, pet)
+            steve.show_over_view(True)
+            steve.show_hand()
 
-    reset_both(human, steve)
+            if steve.hand_value > 21:
+                player_win(human, pet * 2)
+
+            elif steve.hand_value > human.hand_value:
+                player_bust_lost("player lost")
+
+            elif steve.hand_value < human.hand_value:
+                player_win(human, pet * 2)
+
+            else:
+                push(human, pet)
+
+        reset_both(human, steve)
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print()
+        print(f"{Fore.LIGHTCYAN_EX}You gotta run? Ok, cya next time!{Fore.LIGHTWHITE_EX}")
+
+    except Exception as x:
+        print(f"{Fore.LIGHTWHITE_EX}Unknown error: {x}{Fore.LIGHTWHITE_EX}")
