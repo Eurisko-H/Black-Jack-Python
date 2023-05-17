@@ -1,13 +1,17 @@
+import sqlite3
 import os
 import time
 import sys
 import cli_box
 from player import BlackJackPlayer, BlackJackDealer
+from db import DBSetup
 from colorama import Fore, Back, init, Style
 from rich.console import Console
+from rich.table import Table
 from rich.theme import Theme
 
 init()
+game = DBSetup()
 
 custom_theme = Theme({'success': 'green', 'error': 'bold red',
                       'others': 'blue underline', 'tie': 'magenta', 'lose_bust': 'purple', 'win': 'orange3'})
@@ -138,10 +142,28 @@ def show_some(player, dealer):
     dealer.show_hand_cover()
 
 
+def players_table():
+    table = Table(title="All Players")
+    table.add_column("Name", justify="right", style="cyan", no_wrap=True)
+    table.add_column("Money Won", style="green")
+    table.add_column("Money Lost", style="red")
+
+    players = game.get_all_user()
+    for player_name, money_won, money_lost in players:
+        table.add_row(f"{player_name}", f"{money_won}", f"{money_lost}")
+    console.print(table, style='purple')
+
+
+intro()
+players_table()
+user_name = input("What's your name: ")
+human = BlackJackPlayer(user_name, 1000)
+game.setup_db(human)
+name, won, lost = game.get_money(user_name)
+print(cli_box.rounded(f"Name: {name}  MoneyWon: {won}  MoneyLost: {lost}"))
+
+
 def main():
-    intro()
-    user_name = input("What's your name: ")
-    human = BlackJackPlayer(user_name, 1000)
     steve = BlackJackDealer('dealer')
     steve.shuffle_cards()
 
@@ -195,6 +217,13 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print()
         print(f"{Fore.LIGHTCYAN_EX}You gotta run? Ok, cya next time!{Fore.LIGHTWHITE_EX}")
-
+        try:
+            game.setup_db(human)
+        except sqlite3.Error as error:
+            print("Error while working with SQLite", error)
+        finally:
+            if game.conn:
+                game.conn.close()
+                print("sqlite connection is closed")
     except Exception as x:
         print(f"{Fore.LIGHTWHITE_EX}Unknown error: {x}{Fore.LIGHTWHITE_EX}")

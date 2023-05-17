@@ -33,7 +33,7 @@ class Player:
 
 
 class BlackJackPlayer(Player):
-    def __init__(self, name, funds):
+    def __init__(self, name: str, funds: int):
         super().__init__(name)
         self.funds = funds
         self.bet = 0
@@ -55,7 +55,7 @@ class BlackJackPlayer(Player):
 
 
 class BlackJackDealer(Player):
-    def __init__(self, name):
+    def __init__(self, name: str):
         super().__init__(name)
         self.black_jack_deck = Deck.add_cards()
 
