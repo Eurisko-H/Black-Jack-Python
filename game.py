@@ -4,14 +4,15 @@ import time
 import sys
 import cli_box
 from player import BlackJackPlayer, BlackJackDealer
-from db import DBSetup
+from database import DBSetup
+from config_log import start_logger
 from colorama import Fore, Back, init, Style
 from rich.console import Console
 from rich.table import Table
 from rich.theme import Theme
 
 init()
-game = DBSetup()
+
 
 custom_theme = Theme({'success': 'green', 'error': 'bold red',
                       'others': 'blue underline', 'tie': 'magenta', 'lose_bust': 'purple', 'win': 'orange3'})
@@ -82,7 +83,6 @@ def take_bet(player):
         else:
             if bet > player.funds:
                 console.print(f"Your bet can't exceed {player.funds}", style='error')
-
             elif bet < 1:
                 console.print("Your bet can't by less than 1$", style="error")
             else:
@@ -142,22 +142,29 @@ def show_some(player, dealer):
     dealer.show_hand_cover()
 
 
-def players_table():
+def players_table(game_db):
     table = Table(title="All Players")
     table.add_column("Name", justify="right", style="cyan", no_wrap=True)
     table.add_column("Money Won", style="green")
     table.add_column("Money Lost", style="red")
 
-    players = game.get_all_user()
-    for player_name, money_won, money_lost in players:
-        table.add_row(f"{player_name}", f"{money_won}", f"{money_lost}")
-    console.print(table, style='purple')
+    players = game_db.get_all_user()
+    if players:
+        for player_name, money_won, money_lost in players:
+            table.add_row(f"{player_name}", f"{money_won}", f"{money_lost}")
+        console.print(table, style='purple')
+    else:
+        console.print("No player in the database", style='others')
 
 
 intro()
-players_table()
+game = DBSetup()
+players_table(game)
+my_logger = start_logger()
+
 user_name = input("What's your name: ")
 human = BlackJackPlayer(user_name, 1000)
+
 game.setup_db(human)
 name, won, lost = game.get_money(user_name)
 print(cli_box.rounded(f"Name: {name}  MoneyWon: {won}  MoneyLost: {lost}"))
@@ -220,10 +227,10 @@ if __name__ == '__main__':
         try:
             game.setup_db(human)
         except sqlite3.Error as error:
-            print("Error while working with SQLite", error)
+            my_logger.exception("Error while working with SQLite")
         finally:
             if game.conn:
                 game.conn.close()
-                print("sqlite connection is closed")
-    except Exception as x:
-        print(f"{Fore.LIGHTWHITE_EX}Unknown error: {x}{Fore.LIGHTWHITE_EX}")
+                my_logger.info("sqlite connection is closed")
+    except Exception:
+        my_logger.exception("Unknown error")
