@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from game import my_logger
 
 
 class DBSetup:
@@ -10,11 +11,11 @@ class DBSetup:
             self.db_path = os.path.join(os.path.dirname(__file__), 'db', 'game.db')
             self.conn = sqlite3.connect(self.db_path)
             self.cursor = self.conn.cursor()
-            print("Connected to SQLite")
-        except OSError as error:
-            print("Error while creating the file", error)
-        except sqlite3.Error as error:
-            print("Error while working with SQLite", error)
+            my_logger.info("Connected to SQLite")
+        except OSError:
+            my_logger.exception("Error while creating the file")
+        except sqlite3.Error:
+            my_logger.exception("Error while working with SQLite")
 
     def setup_db(self, player):
         money = player.funds - 1000
@@ -32,7 +33,7 @@ class DBSetup:
             self.cursor.execute('UPDATE game SET lost_money = lost_money + ? WHERE name = ?', (abs(money), name))
 
         self.conn.commit()
-        print('values added successfully')
+        my_logger.info('values added successfully')
 
     def get_money(self, name):
         query = self.conn.execute('SELECT * FROM game WHERE name=:name', {'name': name})
