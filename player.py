@@ -63,7 +63,12 @@ class BlackJackDealer(Player):
         self.black_jack_deck = Deck.add_cards()
 
     def shuffle_cards(self):
-        random.shuffle(self.black_jack_deck)
+        the_list = self.black_jack_deck
+        list_range = range(0, len(the_list))
+        for i in list_range:
+            j = random.randint(list_range[0], list_range[-1])
+            the_list[i], the_list[j] = the_list[j], the_list[i]
+        return the_list
 
     def show_hand_cover(self):
         [print(*i) for i in zip(*Card.hide(self.hand))]
