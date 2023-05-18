@@ -1,4 +1,5 @@
 import sqlite3
+import platform
 import os
 import time
 import sys
@@ -12,6 +13,9 @@ from rich.table import Table
 from rich.theme import Theme
 
 init()
+
+if platform.system() == 'Windows':
+    init(autoreset=True)
 
 
 custom_theme = Theme({'success': 'green', 'error': 'bold red',
