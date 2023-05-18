@@ -1,5 +1,4 @@
 import sqlite3
-import platform
 import os
 import time
 import sys
@@ -13,10 +12,6 @@ from rich.table import Table
 from rich.theme import Theme
 
 init()
-
-if platform.system() == 'Windows':
-    init(autoreset=True)
-
 
 custom_theme = Theme({'success': 'green', 'error': 'bold red',
                       'others': 'blue underline', 'tie': 'magenta', 'lose_bust': 'purple', 'win': 'orange3'})
@@ -77,7 +72,7 @@ def take_bet(player):
     clear_screen()
     while True:
         try:
-            console.print(cli_box.rounded(f"Money: {player.funds}$"))
+            print(cli_box.rounded(f"Money: {player.funds}$"))
             if player.funds == 0:
                 console.print(f"You lost all of your money", style='error')
                 sys.exit()
@@ -129,7 +124,7 @@ def player_win(player, pets):
 
 
 def push(player, pets):
-    console.print("🫳 It's a tie", style='tie')
+    console.print("✊ It's a tie", style='tie')
     # it's because I take the pet from the start
     player.add_funds(pets)
 
@@ -153,8 +148,8 @@ def players_table(game_db):
     table.add_column("Money Lost", style="red")
 
     players = game_db.get_all_user()
-    players.sort(key=lambda l: l[0])
     if players:
+        players.sort(key=lambda l: l[0])
         for player_name, money_won, money_lost in players:
             table.add_row(f"{player_name.capitalize()}", f"{money_won}", f"{money_lost}")
         console.print(table, style='purple')
