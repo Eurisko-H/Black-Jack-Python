@@ -153,9 +153,10 @@ def players_table(game_db):
     table.add_column("Money Lost", style="red")
 
     players = game_db.get_all_user()
+    players.sort(key=lambda l: l[0])
     if players:
         for player_name, money_won, money_lost in players:
-            table.add_row(f"{player_name}", f"{money_won}", f"{money_lost}")
+            table.add_row(f"{player_name.capitalize()}", f"{money_won}", f"{money_lost}")
         console.print(table, style='purple')
     else:
         console.print("No player in the database", style='others')
