@@ -13,8 +13,16 @@ from rich.theme import Theme
 
 init()
 
-custom_theme = Theme({'success': 'green', 'error': 'bold red',
-                      'others': 'blue underline', 'tie': 'magenta', 'lose_bust': 'purple', 'win': 'orange3'})
+custom_theme = Theme(
+    {
+        "success": "green",
+        "error": "bold red",
+        "others": "blue underline",
+        "tie": "magenta",
+        "lose_bust": "purple",
+        "win": "orange3",
+    }
+)
 
 console = Console(theme=custom_theme)
 
@@ -45,11 +53,13 @@ def intro():
 
 
 def clear_screen():
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 def black_jack(dealer, pet_amount, player):
-    console.print(f"Black Jack!, You have won {int(pet_amount * 2.5)}$", style='success')
+    console.print(
+        f"Black Jack!, You have won {int(pet_amount * 2.5)}$", style="success"
+    )
     print(f"{Back.LIGHTWHITE_EX}dealer show his hand{Back.RESET}")
     dealer.show_hand()
     pet_amount = int(pet_amount * 2.5)
@@ -62,7 +72,9 @@ def low_on_cards(dealer):
         dealer.reset_deck()
         dealer.shuffle_cards()
         for i in range(4):
-            tprint(f"\r{Fore.LIGHTYELLOW_EX}The dealer is shuffling the cards....{i}{Fore.RESET}")
+            tprint(
+                f"\r{Fore.LIGHTYELLOW_EX}The dealer is shuffling the cards....{i}{Fore.RESET}"
+            )
             time.sleep(1)
         print("\n")
         return True
@@ -74,21 +86,25 @@ def take_bet(player):
         try:
             print(cli_box.rounded(f"Money: {player.funds}$"))
             if player.funds == 0:
-                console.print(f"You lost all of your money", style='error')
+                console.print(f"You lost all of your money", style="error")
                 sys.exit()
-            bet = int(input(f"{Back.CYAN}How many chips worth in $$ would you like to bet?{Back.RESET} "))
+            bet = int(
+                input(
+                    f"{Back.CYAN}How many chips worth in $$ would you like to bet?{Back.RESET} "
+                )
+            )
         except ValueError:
             console.print("Sorry! Please can you type in a number", style="error")
         else:
             if bet > player.funds:
-                console.print(f"Your bet can't exceed {player.funds}", style='error')
+                console.print(f"Your bet can't exceed {player.funds}", style="error")
             elif bet < 1:
                 console.print("Your bet can't by less than 1$", style="error")
             else:
                 try:
                     player.remove_funds(bet)
                 except ValueError:
-                    console.print('The number you inputted is negative', style="error")
+                    console.print("The number you inputted is negative", style="error")
                 else:
                     return bet
 
@@ -100,31 +116,37 @@ def hit(hand, dealer):
 
 def hit_or_stand(hand, dealer):
     while True:
-        ask = input("Would you like to hit or stand please enter [H]or[S]: ").lower().strip()
-        if ask == 'h':
+        ask = (
+            input("Would you like to hit or stand please enter [H]or[S]: ")
+            .lower()
+            .strip()
+        )
+        if ask == "h":
             hit(hand, dealer)
             clear_screen()
-        elif ask == 's':
-            console.print("player stands, Dealer is playing....", style='others')
+        elif ask == "s":
+            console.print("player stands, Dealer is playing....", style="others")
             clear_screen()
             return True
         else:
-            console.print("Sorry I didn't understand that! please try again!", style='error')
+            console.print(
+                "Sorry I didn't understand that! please try again!", style="error"
+            )
             continue
         break
 
 
 def player_bust_lost(message):
-    console.print(f"👎 {message}", style='lose_bust')
+    console.print(f"👎 {message}", style="lose_bust")
 
 
 def player_win(player, pets):
-    console.print("👍 player win", style='win')
+    console.print("👍 player win", style="win")
     player.add_funds(pets)
 
 
 def push(player, pets):
-    console.print("✊ It's a tie", style='tie')
+    console.print("✊ It's a tie", style="tie")
     # it's because I take the pet from the start
     player.add_funds(pets)
 
@@ -149,19 +171,36 @@ def players_table(game_db):
 
     players = game_db.get_all_user()
     if players:
-        players.sort(key=lambda l: l[0])
+        # players.sort(key=lambda l: l[0])   # No need cuz, I can sorted from the sqlite command
         for player_name, money_won, money_lost in players:
-            table.add_row(f"{player_name.capitalize()}", f"{money_won}", f"{money_lost}")
-        console.print(table, style='purple')
+            table.add_row(
+                f"{player_name.capitalize()}", f"{money_won}", f"{money_lost}"
+            )
+        console.print(table, style="purple")
+        return True
     else:
-        console.print("No player in the database", style='others')
+        console.print("No player in the database", style="others")
+        return False
+
+
+def clear_db(confirm):
+    while confirm:
+        ask = input("Do you like to clear the database[y]or[n]: ").lower().strip()
+        if ask == "y":
+            game.delete_table()
+            break
+        elif ask == "n":
+            break
+        else:
+            console.print("Please use either y or n for answer.", style="error")
 
 
 intro()
 game = DBSetup()
-players_table(game)
+confirm = players_table(game)
 my_logger = start_logger()
 
+clear_db(confirm)
 user_name = input("What's your name: ")
 human = BlackJackPlayer(user_name, 1000)
 
@@ -171,7 +210,7 @@ print(cli_box.rounded(f"Name: {name}  MoneyWon: {won}  MoneyLost: {lost}"))
 
 
 def main():
-    steve = BlackJackDealer('dealer')
+    steve = BlackJackDealer("dealer")
     steve.shuffle_cards()
 
     while True:
@@ -193,7 +232,8 @@ def main():
             if human.hand_value > 21:
                 player_bust_lost("player bust")
                 break
-            if hit_or_stand(human, steve): break
+            if hit_or_stand(human, steve):
+                break
             show_some(human, steve)
 
         if human.hand_value <= 21:
@@ -218,12 +258,14 @@ def main():
         reset_both(human, steve)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
         print()
-        print(f"{Fore.LIGHTCYAN_EX}You gotta run? Ok, cya next time!{Fore.LIGHTWHITE_EX}")
+        print(
+            f"{Fore.LIGHTCYAN_EX}You gotta run? Ok, cya next time!{Fore.LIGHTWHITE_EX}"
+        )
         try:
             game.setup_db(human)
         except sqlite3.Error as error:
