@@ -8,7 +8,7 @@ from deck import Deck
 class Player:
     def __init__(self, name: str):
         self.name = name
-        self.hand = []
+        self.hand = []  # type: ignore
         self.hand_value = 0
         self.aces = 0
 
@@ -36,22 +36,29 @@ class BlackJackPlayer(Player):
     def __init__(self, name: str, funds: int):
         super().__init__(name)
         self.funds = funds
-        self.bet = 0
 
     def add_funds(self, amount: int):
         if amount >= 0:
             self.funds += amount
         else:
-            raise ValueError('the addFunds method must be passed a number greater than or equal to zero')
+            raise ValueError(
+                "the addFunds method must be passed a number greater than or equal to zero"
+            )
 
     def remove_funds(self, amount: int):
         if amount >= 0:
             self.funds -= amount
         else:
-            raise ValueError('the removeFunds method must be passed a number greater than or equal to zero')
+            raise ValueError(
+                "the removeFunds method must be passed a number greater than or equal to zero"
+            )
 
     def show_over_view(self):
-        print(cli_box.rounded(f"""Name: {self.name}  Hand-Total: {self.hand_value}  Balance: {self.funds}"""))
+        print(
+            cli_box.rounded(
+                f"""Name: {self.name}  Hand-Total: {self.hand_value}  Balance: {self.funds}"""
+            )
+        )
 
 
 class BlackJackDealer(Player):
@@ -63,6 +70,7 @@ class BlackJackDealer(Player):
         self.black_jack_deck = Deck.add_cards()
 
     def shuffle_cards(self):
+        """Fisher Yates shuffle https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle"""
         the_list = self.black_jack_deck
         list_range = range(0, len(the_list))
         for i in list_range:
